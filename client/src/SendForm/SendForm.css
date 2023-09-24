@@ -1,0 +1,40 @@
+.form-container form {
+  margin: 0 auto;
+  padding: 1em 0;
+
+  width: 60ch;
+
+  display: grid;
+  grid-auto-flow: row;
+  gap: 0.5em;
+}
+
+.form-container input {
+  padding: 0.5em;
+  border: none;
+  border-radius: 0.5em;
+  box-shadow: 1px 1px 4px #00000040;
+}
+
+.form-container textarea {
+  padding: 0.5em;
+  height: 15ch;
+  border-style: none;
+  outline: none;
+  resize: none;
+  box-shadow: 1px 1px 4px #00000040;
+}
+
+.form-container button {
+  cursor: pointer;
+  padding: 0.5em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 0.5em;
+  box-shadow: 1px 1px 4px #00000040;
+  transition: background-color 0.2s;
+}
+
+.form-container button:hover {
+  background-color: #00000020;
+}
