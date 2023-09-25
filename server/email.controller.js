@@ -1,6 +1,6 @@
 import { transporter } from "./helpers.js";
 
-let nIntervId;
+let intIds = [];
 
 export default {
   async send(req, res) {
@@ -11,7 +11,7 @@ export default {
       text: req.body.mailBody,
     };
 
-    nIntervId = await setInterval(() => {
+    let nIntervId = await setInterval(() => {
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.error("Помилка під час відправки листа:", error);
@@ -20,10 +20,24 @@ export default {
         }
       });
     }, req.body.mailInterval);
+
+    const newIntId = nIntervId[Symbol.toPrimitive]();
+
+    intIds.push({ subject: req.body.mailSubject, id: newIntId });
+
+    res.json(intIds);
   },
   stop(req, res) {
-    clearInterval(nIntervId);
-    nIntervId = null;
-    console.log("Stop interval");
+    req.body.ids.forEach((element) => {
+      clearInterval(element);
+      let indexToDelete = intIds.findIndex((letter) => letter.id === element);
+
+      if (indexToDelete !== -1) {
+        intIds.splice(indexToDelete, 1);
+      }
+      console.log(`Clear interval ${element}`);
+    });
+
+    res.json(intIds);
   },
 };

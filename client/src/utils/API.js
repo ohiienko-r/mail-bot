@@ -13,11 +13,12 @@ export const sendEmail = (body) => {
   }).then((res) => res.json());
 };
 
-export const stopEmailing = () => {
+export const stopEmailing = (body) => {
   return fetch(_URLs.STOP_MAILING, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
+    body: JSON.stringify(body),
   }).then((res) => res.json());
 };

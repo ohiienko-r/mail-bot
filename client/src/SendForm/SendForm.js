@@ -12,6 +12,7 @@ export default class SendForm {
       mailBody: document.createElement("textarea"),
       intervalInput: document.createElement("input"),
       sendBtn: document.createElement("button"),
+      autoSentLettersField: document.createElement("fieldset"),
       stopBtn: document.createElement("button"),
     };
   }
@@ -24,7 +25,7 @@ export default class SendForm {
     this.elements.receiverEmails.setAttribute("required", "");
     this.elements.receiverEmails.setAttribute(
       "placeholder",
-      "Multiple receiver e-mails:"
+      "Recipients e-mails"
     );
 
     this.elements.mailSubject.setAttribute("name", "mail-subject");
@@ -50,7 +51,12 @@ export default class SendForm {
       e.preventDefault();
       this.sendHandler();
       this.elements.form.reset();
+      this.elements.sendBtn.disabled = true;
     });
+
+    const autoSentLetters = JSON.parse(localStorage.getItem("autoLeters"));
+
+    this.displayAutoSentEmails(autoSentLetters);
 
     this.elements.stopBtn.innerText = "Stop auto emailing";
     this.elements.stopBtn.addEventListener("click", (e) => {
@@ -68,6 +74,7 @@ export default class SendForm {
       this.elements.mailBody,
       this.elements.intervalInput,
       this.elements.sendBtn,
+      this.elements.autoSentLettersField,
       this.elements.stopBtn
     );
 
@@ -89,6 +96,25 @@ export default class SendForm {
     }
   }
 
+  displayAutoSentEmails(lettersList) {
+    this.elements.autoSentLettersField.replaceChildren();
+
+    if (!lettersList) return null;
+
+    lettersList.forEach((letter) => {
+      const letterSubject = document.createElement("label");
+      letterSubject.innerText = letter.subject;
+
+      const letterCheckbox = document.createElement("input");
+      letterCheckbox.setAttribute("type", "checkbox");
+      letterCheckbox.setAttribute("id", `${letter.id}`);
+
+      letterSubject.prepend(letterCheckbox);
+
+      this.elements.autoSentLettersField.append(letterSubject);
+    });
+  }
+
   async sendHandler() {
     const formData = new FormData(this.elements.form);
 
@@ -101,15 +127,35 @@ export default class SendForm {
     };
 
     try {
-      await sendEmail(body);
+      const response = await sendEmail(body);
+
+      localStorage.setItem("autoLeters", JSON.stringify(response));
+
+      this.displayAutoSentEmails(response);
     } catch (error) {
       throw new Error(error);
     }
   }
 
   async stopHandler() {
+    const allCheckboxes = this.elements.autoSentLettersField.querySelectorAll(
+      'input[type="checkbox"]'
+    );
+
+    const body = {
+      ids: [],
+    };
+
+    allCheckboxes.forEach((e) => {
+      if (e.checked === true) body.ids.push(+e.id);
+    });
+
     try {
-      await stopEmailing();
+      const response = await stopEmailing(body);
+
+      localStorage.setItem("autoLeters", JSON.stringify(response));
+
+      this.displayAutoSentEmails(response);
     } catch (error) {
       throw new Error(error);
     }
