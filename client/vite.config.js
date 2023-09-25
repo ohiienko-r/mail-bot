@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "https://mail-jni1wj8g9-ohiienko-r.vercel.app/",
       },
     },
   },
