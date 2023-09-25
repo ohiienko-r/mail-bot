@@ -11,16 +11,15 @@ export default {
       text: req.body.mailBody,
     };
 
-    nIntervId = setInterval(
-      await transporter.sendMail(mailOptions, (error, info) => {
+    nIntervId = await setInterval(() => {
+      transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.error("Помилка під час відправки листа:", error);
         } else {
           console.log("Лист відправлено успішно:", info.response);
         }
-      }),
-      req.body.mailInterval
-    );
+      });
+    }, req.body.mailInterval);
   },
   stop(req, res) {
     clearInterval(nIntervId);
