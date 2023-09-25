@@ -10,6 +10,7 @@ export default class SendForm {
       receiverEmails: document.createElement("input"),
       mailSubject: document.createElement("input"),
       mailBody: document.createElement("textarea"),
+      intervalInput: document.createElement("input"),
       sendBtn: document.createElement("button"),
     };
   }
@@ -19,6 +20,7 @@ export default class SendForm {
     this.elements.senderEmail.setAttribute("placeholder", "Sender e-mail:");
 
     this.elements.receiverEmails.setAttribute("name", "receiver-emails");
+    this.elements.receiverEmails.setAttribute("required", "");
     this.elements.receiverEmails.setAttribute(
       "placeholder",
       "Multiple receiver e-mails:"
@@ -34,16 +36,29 @@ export default class SendForm {
     );
 
     this.elements.sendBtn.innerText = "Send";
+    this.elements.sendBtn.disabled = true;
     this.elements.sendBtn.addEventListener("click", (e) => {
       e.preventDefault();
       this.sendHandler();
       this.elements.form.reset();
     });
 
+    this.elements.intervalInput.setAttribute("type", "number");
+    this.elements.intervalInput.setAttribute("max", "24");
+    this.elements.intervalInput.setAttribute(
+      "placeholder",
+      "How frequently do you want msg to be sent in hours (must be less than 24)"
+    );
+
+    this.elements.form.addEventListener("change", (e) => {
+      this.inputsChecker();
+    });
+
     this.elements.form.append(
       this.elements.receiverEmails,
       this.elements.mailSubject,
       this.elements.mailBody,
+      this.elements.intervalInput,
       this.elements.sendBtn
     );
 
@@ -51,6 +66,18 @@ export default class SendForm {
     this.elements.self.append(this.elements.form);
 
     parent.append(this.elements.self);
+  }
+
+  inputsChecker() {
+    if (
+      !this.elements.receiverEmails.value ||
+      !this.elements.intervalInput.value ||
+      this.elements.intervalInput.value > 24
+    ) {
+      this.elements.sendBtn.disabled = true;
+    } else {
+      this.elements.sendBtn.disabled = false;
+    }
   }
 
   async sendHandler() {
@@ -64,7 +91,7 @@ export default class SendForm {
     };
 
     try {
-      const response = await sendEmail(body);
+      await sendEmail(body);
     } catch (error) {
       throw new Error(error);
     }
