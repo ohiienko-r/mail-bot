@@ -1,5 +1,7 @@
 import { transporter } from "./helpers.js";
 
+let nIntervId;
+
 export default {
   async send(req, res) {
     const mailOptions = {
@@ -9,12 +11,20 @@ export default {
       text: req.body.mailBody,
     };
 
-    await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Помилка під час відправки листа:", error);
-      } else {
-        console.log("Лист відправлено успішно:", info.response);
-      }
-    });
+    nIntervId = setInterval(
+      await transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Помилка під час відправки листа:", error);
+        } else {
+          console.log("Лист відправлено успішно:", info.response);
+        }
+      }),
+      req.body.mailInterval
+    );
+  },
+  stop(req, res) {
+    clearInterval(nIntervId);
+    nIntervId = null;
+    console.log("Stop interval");
   },
 };

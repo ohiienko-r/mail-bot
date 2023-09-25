@@ -1,4 +1,4 @@
-import { sendEmail } from "../utils/API";
+import { sendEmail, stopEmailing } from "../utils/API";
 import "./SendForm.css";
 
 export default class SendForm {
@@ -12,6 +12,7 @@ export default class SendForm {
       mailBody: document.createElement("textarea"),
       intervalInput: document.createElement("input"),
       sendBtn: document.createElement("button"),
+      stopBtn: document.createElement("button"),
     };
   }
   render(parent) {
@@ -35,6 +36,14 @@ export default class SendForm {
       "Type your message here..."
     );
 
+    this.elements.intervalInput.setAttribute("type", "number");
+    this.elements.intervalInput.setAttribute("max", "24");
+    this.elements.intervalInput.setAttribute("name", "mail-interval");
+    this.elements.intervalInput.setAttribute(
+      "placeholder",
+      "How frequently do you want msg to be sent in hours (must be less than 24)"
+    );
+
     this.elements.sendBtn.innerText = "Send";
     this.elements.sendBtn.disabled = true;
     this.elements.sendBtn.addEventListener("click", (e) => {
@@ -43,12 +52,11 @@ export default class SendForm {
       this.elements.form.reset();
     });
 
-    this.elements.intervalInput.setAttribute("type", "number");
-    this.elements.intervalInput.setAttribute("max", "24");
-    this.elements.intervalInput.setAttribute(
-      "placeholder",
-      "How frequently do you want msg to be sent in hours (must be less than 24)"
-    );
+    this.elements.stopBtn.innerText = "Stop auto emailing";
+    this.elements.stopBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.stopHandler();
+    });
 
     this.elements.form.addEventListener("change", (e) => {
       this.inputsChecker();
@@ -59,7 +67,8 @@ export default class SendForm {
       this.elements.mailSubject,
       this.elements.mailBody,
       this.elements.intervalInput,
-      this.elements.sendBtn
+      this.elements.sendBtn,
+      this.elements.stopBtn
     );
 
     this.elements.self.classList.add("form-container");
@@ -88,10 +97,19 @@ export default class SendForm {
       receiverEmails: [formData.get("receiver-emails")],
       mailSubject: formData.get("mail-subject"),
       mailBody: formData.get("mail-body"),
+      mailInterval: +formData.get("mail-interval") * 3600000,
     };
 
     try {
       await sendEmail(body);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async stopHandler() {
+    try {
+      await stopEmailing();
     } catch (error) {
       throw new Error(error);
     }
