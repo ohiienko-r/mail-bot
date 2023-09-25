@@ -16,9 +16,6 @@
         "start": "cd ./server && npm start",
         "build": "cd ./server && npm i && cd ../client && npm i && npx vite build && cd ../ && rm -rf ./server/public/* && cp -r ./client/dist/* ./server/public/"
     },
-    "dependencies": {
-        "vite": "^4.4.5"
-    },
     "keywords": [],
     "author": "",
     "license": "ISC"
