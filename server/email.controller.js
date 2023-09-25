@@ -11,6 +11,14 @@ export default {
       text: req.body.mailBody,
     };
 
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Помилка під час відправки листа:", error);
+      } else {
+        console.log("Лист відправлено успішно:", info.response);
+      }
+    });
+
     let nIntervId = await setInterval(() => {
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

@@ -84,6 +84,9 @@ export default class SendForm {
     parent.append(this.elements.self);
   }
 
+  /**
+   * Method checks recepient field and interval field to be filled and checks interval to be less than 24 and respectively disables send button
+   */
   inputsChecker() {
     if (
       !this.elements.receiverEmails.value ||
@@ -96,6 +99,11 @@ export default class SendForm {
     }
   }
 
+  /**
+   *
+   * @param {Array} lettersList renders all letters' subjects that are currently automatically sent to recepient(s)
+   * @returns void
+   */
   displayAutoSentEmails(lettersList) {
     this.elements.autoSentLettersField.replaceChildren();
 
@@ -115,6 +123,10 @@ export default class SendForm {
     });
   }
 
+  /**
+   * Method collects form data, creates a request body and makes a request to server using API method to start sending letter automatically.
+   * After receiving a calls a method to re-render an auto sent letters.
+   */
   async sendHandler() {
     const formData = new FormData(this.elements.form);
 
@@ -137,6 +149,10 @@ export default class SendForm {
     }
   }
 
+  /**
+   * Method collects ids from the auto sent letters list and creates a request body to send a request to server using API method to stop auto sending
+   * selected letters from the list. After receiving a response re-renders an auto sent letters list.
+   */
   async stopHandler() {
     const allCheckboxes = this.elements.autoSentLettersField.querySelectorAll(
       'input[type="checkbox"]'
