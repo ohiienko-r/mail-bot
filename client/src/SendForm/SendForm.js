@@ -19,7 +19,7 @@ export default class SendForm {
   render(parent) {
     this.elements.senderEmail.setAttribute("type", "email");
     this.elements.senderEmail.setAttribute("name", "sender-mail");
-    this.elements.senderEmail.setAttribute("placeholder", "Sender e-mail:");
+    this.elements.senderEmail.setAttribute("placeholder", "Sender e-mail");
 
     this.elements.receiverEmails.setAttribute("name", "receiver-emails");
     this.elements.receiverEmails.setAttribute("required", "");
@@ -69,6 +69,7 @@ export default class SendForm {
     });
 
     this.elements.form.append(
+      this.elements.senderEmail,
       this.elements.receiverEmails,
       this.elements.mailSubject,
       this.elements.mailBody,
@@ -131,8 +132,10 @@ export default class SendForm {
     const formData = new FormData(this.elements.form);
 
     const body = {
-      senderEmail: formData.get("sender-mail"),
-      receiverEmails: [formData.get("receiver-emails")],
+      receiverEmails: [
+        formData.get("receiver-emails"),
+        formData.get("sender-mail"),
+      ],
       mailSubject: formData.get("mail-subject"),
       mailBody: formData.get("mail-body"),
       mailInterval: +formData.get("mail-interval") * 3600000,
